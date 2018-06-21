@@ -1,0 +1,42 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: aws-sb-demo
+  labels:
+    app: aws-sb-demo-chart
+    chart: aws-sb-demo-chart-0.1.0
+    release: aws-sb-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aws-sb-demo-chart
+      release: aws-sb-demo
+  template:
+    metadata:
+      labels:
+        app: aws-sb-demo-chart
+        release: aws-sb-demo
+    spec:
+      containers:
+        - name: aws-sb-demo-chart
+          image: "841938870680.dkr.ecr.ap-southeast-2.amazonaws.com/aws-sb-demo:latest"
+          imagePullPolicy: Always
+          env:
+            - name: REGION_NAME
+              value: ap-southeast-2
+            - name: QUEUE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: momenton-sqs-demo-binding
+                  key: QUEUE_URL
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: momenton-sqs-demo-binding
+                  key: SQS_AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: momenton-sqs-demo-binding
+                  key: SQS_AWS_SECRET_ACCESS_KEY
